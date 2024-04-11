@@ -1,9 +1,12 @@
 ﻿@model articles01.ModelView.AuthorView
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService authorizationService
 
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Pages/Shared/_LayoutAdmin.cshtml";
+    var result = authorizationService.AuthorizeAsync(User, "Admin");
 }
 
 <h1>Edit author info</h1>
@@ -61,10 +64,16 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
+
+@{
+    if (result.Result.Succeeded)
+    {
+        <div>
+            <a asp-action="Index">Back to List</a>
+        </div>
+    }
+}
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

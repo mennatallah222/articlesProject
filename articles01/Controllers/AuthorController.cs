@@ -1,5 +1,6 @@
 ﻿using articles01.Data;
 using articles01.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,16 +16,21 @@ namespace articles01.Controllers
         private readonly IDataHelper<Author> dataHelper;
         private readonly Code.FileHelper fileHelper;
         private readonly IWebHostEnvironment webHostEnvironment;
+        private readonly IAuthorizationService authorizationService;
         private int pageItems;
 
-        public AuthorController(IDataHelper<Author> dataHelper, IWebHostEnvironment webHostEnvironment)
+        public AuthorController(IDataHelper<Author> dataHelper, 
+                                IWebHostEnvironment webHostEnvironment,
+                                IAuthorizationService authorizationService)
         {
             this.dataHelper = dataHelper;
             this.webHostEnvironment = webHostEnvironment;
+            this.authorizationService = authorizationService;
             fileHelper = new Code.FileHelper(this.webHostEnvironment);
             pageItems = 5;
         }
         // GET: AuthorController
+        [Authorize("Admin")]
         public ActionResult Index(int? id)
         {
             if (id == 0 ||id==null)
@@ -38,6 +44,7 @@ namespace articles01.Controllers
             }
         }
 
+        [Authorize("Admin")]
         public ActionResult Search(string searchItem)
         {
             if (searchItem == null)
@@ -51,6 +58,7 @@ namespace articles01.Controllers
 
 
         // GET: AuthorController/Edit/5
+        [Authorize]
         public ActionResult Edit(int id)
         {
             var author = dataHelper.Find(id);
@@ -72,6 +80,7 @@ namespace articles01.Controllers
         // POST: AuthorController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Edit(int id, ModelView.AuthorView collection)
         {
             try
@@ -90,7 +99,18 @@ namespace articles01.Controllers
                 };
 
                 dataHelper.Edit(id, author);
-                return RedirectToAction(nameof(Index));
+
+                var result = authorizationService.AuthorizeAsync(User, "Admin");
+                if (result.Result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+
+                }
+                else
+                {
+                    return Redirect("/AdminIndex");
+
+                }
             }
             catch
             {
@@ -99,6 +119,7 @@ namespace articles01.Controllers
         }
 
         // GET: AuthorController/Delete/5
+        [Authorize("Admin")]
         public ActionResult Delete(int id)
         {
             var author = dataHelper.Find(id);
@@ -120,6 +141,7 @@ namespace articles01.Controllers
         // POST: AuthorController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Admin")]
         public ActionResult Delete(int id, Author collection)
         {
             try

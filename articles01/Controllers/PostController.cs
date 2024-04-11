@@ -86,6 +86,34 @@ namespace articles01.Controllers
 
         }
 
+        public ActionResult Search(string searchItem)
+        {
+            SetUser();
+
+            if (result.Result.Succeeded)
+            {
+                if (searchItem == null)
+                    return View(dataHelper.GetAllData());
+                else
+                {
+                    return View("Index", dataHelper.Search(searchItem));
+                }
+            }
+            else
+            {
+                if (searchItem == null)
+                    return View(dataHelper.GetDataByUser(UserId));
+                else
+                {
+                    return View("Index", dataHelper.Search(searchItem).Where(x=>x.UserId==UserId).ToList());
+                }
+            }
+                
+
+        }
+
+
+
         // GET: PostController/Details/5
         public ActionResult Details(int id)
         {
@@ -191,16 +219,22 @@ namespace articles01.Controllers
         // GET: PostController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View(dataHelper.Find(id));
         }
 
         // POST: PostController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, AuthorPost collection)
         {
             try
             {
+                dataHelper.Delete(id);
+                string filePath = "~/Images/" + collection.PostImageUrl;
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch

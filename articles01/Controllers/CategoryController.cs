@@ -1,5 +1,6 @@
 ﻿using articles01.Data;
 using articles01.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace articles01.Controllers
 {
+    [Authorize("Admin")]
     public class CategoryController : Controller
     {
         private readonly IDataHelper<Category> dataHelper;
