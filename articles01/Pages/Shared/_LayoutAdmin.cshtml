@@ -1,9 +1,11 @@
-﻿
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService autorizationService
 @inject articles01.Data.IDataHelper<articles01.Models.Author> dataHelper 
 @using System.Security.Claims
 @{
     var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
     int id = dataHelper.GetAllData().Where(x => x.UserId == userId).Select(x => x.Id).First();
+    var result = autorizationService.AuthorizeAsync(User, "Admin");
  }
 <!DOCTYPE html>
 <html style="font-family: Cairo, sans-serif;">
@@ -74,10 +76,22 @@
                 <span class="navbar-text actions">
                     <a asp-controller="Author" asp-action="Edit" asp-route-id="@id" class="btn btn-light action-button" role="button" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">حسابي</a>
 
-                    <a class="btn btn-light action-button" role="button" href="#" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">المستخدمين</a>
-                    <a class="btn btn-light action-button" role="button" href="#" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">المقالات</a>
-                    <a class="btn btn-light action-button" role="button" href="#" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">الاصناف</a>
-                    <a class="btn btn-light action-button" role="button" href="#" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;background: var(--bs-red);">الرئيسة</a>
+                    @{
+                        if (result.Result.Succeeded)
+                        {
+                            <a class="btn btn-light action-button" role="button" href="/Author/Index" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">المستخدمين</a>
+
+                        }
+                    }
+                    <a class="btn btn-light action-button" role="button" href="/Post/Index" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">المقالات</a>
+                    @{
+                        if (result.Result.Succeeded)
+                        {
+                            <a class="btn btn-light action-button" role="button" href="/Category/Index" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">الاصناف</a>
+
+                        }
+                    }
+                    <a class="btn btn-light action-button" role="button" href="/AdminIndex" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;background: var(--bs-red);">الرئيسة</a>
 
                 </span>
             </div>

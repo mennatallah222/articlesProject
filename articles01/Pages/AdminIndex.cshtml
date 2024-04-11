@@ -26,7 +26,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <p class="card-text cardbody-sub-text" style="text-align: center;">مشاركاتك الكلية</p>
+                    <p class="card-text sub-text-color">@Model.AllPosts.ToString()</p>
+                    <p class="card-text cardbody-sub-text" style="text-align: center;">all posts</p>
                 </div>
             </div>
         </div>
@@ -39,7 +40,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <p class="card-text cardbody-sub-text" style="text-align: center;">مشاركاتك لهذه السنة</p>
+                    <p class="card-text sub-text-color">@Model.PostThisYear.ToString()</p>
+                    <p class="card-text cardbody-sub-text" style="text-align: center;">this year's posts'</p>
                 </div>
             </div>
         </div>
@@ -52,8 +54,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <p class="card-text sub-text-color"></p>
-                    <p class="card-text cardbody-sub-text" style="text-align: center;">مشاركاتك لهذه الشهر</p>
+                    <p class="card-text sub-text-color">@Model.PostsLastMonth.ToString()</p>
+                    <p class="card-text cardbody-sub-text" style="text-align: center;">this months' posts</p>
                 </div>
             </div>
         </div>
